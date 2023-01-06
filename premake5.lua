@@ -7,7 +7,7 @@ project "SFML_SKELETON"
     kind "ConsoleApp"
     language "C++"
     targetdir "bin/%{cfg.buildcfg}"
-    files { "src/**.cpp", "src/**.h", "src/**.hpp", "dependencies/ImGui/*.*"}
+    files { "src/**.cpp", "src/**.hpp", "dependencies/ImGui/*.*"}
 
 filter "configurations:*"
     defines { "SFML_STATIC" }
@@ -41,7 +41,7 @@ filter "configurations:Debug"
 
 filter "configurations:Release"
     defines { "NDEBUG" }
-    optimize "On"
+    optimize "Speed"
     links
     {	
         "sfml-graphics-s",
