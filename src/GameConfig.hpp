@@ -7,3 +7,6 @@ const float METEOR_SPEED = 100.f;
 const float SPACESHIP_COOLDOWN = 0.4f;
 const float INVINCIBLE_COOLDOWN = 2.f;
 const float TIME_STEP = 1.f/200.f;
+const int GRID_X = 5;
+const int GRID_Y = 5;
+const int ASTEROIDS_SPAWNING_NBR = 4;

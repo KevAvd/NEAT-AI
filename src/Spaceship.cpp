@@ -31,14 +31,13 @@ void Spaceship::Update(std::vector<std::unique_ptr<Bullet>> &bullets){
     if(hitted){
         inv_cooldown += TIME_STEP;
 
-        drawable.setFillColor(sf::Color(255,255,255,70));
+        drawable.setFillColor(sf::Color(255,0,0,70));
 
         if(inv_cooldown >= INVINCIBLE_COOLDOWN){
             hitted = false;
             inv_cooldown = 0;
             drawable.setFillColor(sf::Color(255,255,255,255));
         }
-        return;
     }
 
     //Handle controls
@@ -51,7 +50,7 @@ void Spaceship::Update(std::vector<std::unique_ptr<Bullet>> &bullets){
     if(right){
         rotation.SetDegree(rotation.GetDegree() + turn_rate * TIME_STEP);
     }
-    if(shooting && cooldown <= 0){
+    if(shooting && cooldown <= 0 & !hitted){
         cooldown = SPACESHIP_COOLDOWN;
         bullets.push_back(std::unique_ptr<Bullet>{new Bullet(position,rotation,BULLET_SPEED, this)});
     }
