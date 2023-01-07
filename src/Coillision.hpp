@@ -1,3 +1,4 @@
+#pragma once
 #include "Mathlib.hpp"
 
 bool circle_circle_collision(Vec2 p1, Vec2 p2, float r1, float r2){
