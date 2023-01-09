@@ -30,13 +30,6 @@
 // []-/
 
 void NeuralNet::decodeGenome(std::string genome){
-    float nbr = 15.123f;
-    int* ptr1 = (int*)&nbr;
-    int val = *ptr1;
-    std::bitset<32> floatBit(val);
-    std::cout << floatBit.to_string() << std::endl;
-    float* ptr = (float*) &floatBit;
-    std::cout << *ptr << std::endl;
     // std::cout << genome << std::endl << std::endl;
     std::string endSymbol(":&$end$&");
     genome.append(endSymbol);
@@ -59,21 +52,44 @@ void NeuralNet::decodeGenome(std::string genome){
                 subs[subIndex] += substr.at(i);
             }
         }
+        int count = 0;
+        int values[5];
         for(int i = 0; i < 5; i++){
             if(subs[i] != ""){
                 std::cout << subs[i] << std::endl;
-                // std::string s = subs[i];
-                // std::stringstream ss;
-                // ss << std::hex << s;
-                // unsigned n;
-                // ss >> n;
-                // std::bitset<8> b(n);
-                // std::cout << b.to_string() << std::endl;
+                std::string s = subs[i];
+                std::stringstream ss;
+                ss << std::hex << s;
+                unsigned n;
+                ss >> n;
+                count++;
             }
+        }
+        if(count == 3){
+            nodes.push_back(std::unique_ptr<Node>{new Node});
+            auto it = nodes.end();
+            it--;
+            Node* ptr = (*it).get();
+            ptr->id = values[0];
+            ptr->layer = values[1];
+            ptr->type = (NodeType)values[2];
+        }
+        if(count == 5){
+            connections.push_back(std::unique_ptr<Connection>{new Connection});
+            auto it = connections.end();
+            it--;
+            Connection* ptr = (*it).get();
+            ptr->innovationNbr = values[0];
+            ptr->in = values[1];
+            ptr->out = values[2];
+            ptr->weight = values[3];
+            ptr->enable = values[4];
         }
         std::cout << std::endl;
         index = genome.find(":");
     }
+
+    
 }
 
 std::string NeuralNet::encodeGenome(){
@@ -84,6 +100,25 @@ void NeuralNet::processInputs(float inputs[]){
 
 }
 
-void NeuralNet::drawNet(sf::RenderTarget* trgt, Vec2 size, Vec2 center){
-
+void NeuralNet::drawNet(sf::RenderTarget* trgt, Vec2 size, Vec2 center, float nodeRadius){
+    int layerNbr = layers.size();
+    float start_x = center.x - size.x/2.f + nodeRadius;
+    float end_x = center.x + size.x/2.f - nodeRadius;
+    float delta_x = (end_x - start_x) / (float)layerNbr;
+    float crnt_x(start_x);
+    float start_y = center.y - size.y/2.f + nodeRadius;
+    float end_y = center.y + size.y/2.f - nodeRadius;
+    float delta_y;
+    float crnt_y(start_y);
+    sf::CircleShape nodeShape(nodeRadius);
+    nodeShape.setOrigin(nodeRadius, nodeRadius);
+    for(int i = 0; i < layerNbr; i++){
+        delta_y = (end_y - start_y) / layers[i].size();
+        for(int j = 0; j < layers[i].size(); j++){
+            nodeShape.setPosition(crnt_x, crnt_y);
+            crnt_y += delta_y;
+            trgt->draw(nodeShape); 
+        }
+        crnt_x += delta_x;
+    }
 }

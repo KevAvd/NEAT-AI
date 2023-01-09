@@ -34,8 +34,7 @@ class NeuralNet{
 private:
     std::vector<std::unique_ptr<Node>> nodes;
     std::vector<std::unique_ptr<Connection>> connections;
-    std::vector<std::unique_ptr<NodeConMap>> nodeConMaps;
-    std::vector<std::vector<NodeConMap*>> layers;
+    std::vector<std::vector<std::unique_ptr<NodeConMap>>> layers;
 public:
     //Decode the genome from string to struct Node/Connection stored in vectors
     //Map each node with his previous layer connections
@@ -48,6 +47,6 @@ public:
     //Go through list of node maps and process outputs of each nodes
     void processInputs(float inputs[]);
 
-    //Draw the neural net 
-    void drawNet(sf::RenderTarget* trgt, Vec2 size, Vec2 center);
+    //Draw the neural net //
+    void drawNet(sf::RenderTarget* trgt, Vec2 size, Vec2 center, float nodeRadius);
 };

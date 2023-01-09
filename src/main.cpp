@@ -11,6 +11,7 @@
 #include "Asteroid.hpp"
 #include "GuiHandler.hpp"
 #include "Game.hpp"
+#include "NeuralNet.hpp"
 
 int main(void){
 
@@ -24,6 +25,9 @@ int main(void){
     Game myGame(Vec2(800,800), Vec2(400+100,1080/2), sf::Color(100,100,100), Vec2(GRID_X,GRID_Y));
     myGame.gui_ptr = &myGUI;
     Spaceship* myShip = myGame.AddShip(Vec2(400+100,1080/2));
+
+    NeuralNet nn;
+    nn.decodeGenome("100-00-0:02-00-00:03-01-01:01-01-03-0000-01:02-02-03-0000-01");
     window.setFramerateLimit(144);
     while (window.isOpen())
     {
