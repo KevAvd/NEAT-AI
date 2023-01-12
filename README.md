@@ -16,7 +16,7 @@ The game itself is simple. you are a spaceship and you have to shoot the incomin
 
 ## NEAT
 
-**NEAT** is a sepcial type of genetic algorithm, that alows the *neural network* to develop new *neurons* && new *connection* between them in it's evolution.
+**NEAT** is a sepcial type of genetic algorithm, that alows the *neural network* to develop new *neurons* and new *connection* between them in it's evolution.
 > *The **Neat** Algorithm can be summarize in 3 step :*
 - **Speciation**
 - **Crossover**
