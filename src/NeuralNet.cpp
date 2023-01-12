@@ -5,9 +5,7 @@
 
 // Node
 // - int id
-// - int layer
-// - float input
-// - float output
+// - float value
 // - NodeType type
 
 // Connection
@@ -18,7 +16,7 @@
 // - bool enable
 
 // Genome
-// Node => AA-AA-A (id, layer, type)
+// Node => AA-AA (id, type)
 // connection => AAAA-AA-AA-AAAA-A (inNbr, node in id, node out id, weight, enable)
 
 // node    node     node     con              con
@@ -29,7 +27,7 @@
 //     []
 // []-/
 
-void NeuralNet::decodeGenome(std::string genome){
+void NeuralNet::DecodeGenome(std::string genome){
     // std::cout << genome << std::endl << std::endl;
     std::string endSymbol(":&$end$&");
     genome.append(endSymbol);
@@ -71,8 +69,7 @@ void NeuralNet::decodeGenome(std::string genome){
             it--;
             Node* ptr = (*it).get();
             ptr->id = values[0];
-            ptr->layer = values[1];
-            ptr->type = (NodeType)values[2];
+            ptr->type = (NodeType)values[1];
         }
         if(count == 5){
             connections.push_back(std::unique_ptr<Connection>{new Connection});
@@ -92,33 +89,69 @@ void NeuralNet::decodeGenome(std::string genome){
     
 }
 
-std::string NeuralNet::encodeGenome(){
+std::string NeuralNet::EncodeGenome(){
     return std::string("Not implemented");
 }
 
-void NeuralNet::processInputs(float inputs[]){
+void NeuralNet::ProcessInputs(float inputs[], float outputs[]){
 
+    int counter(0);
+    for(auto& node : this->inputs){
+        node->value = inputs[counter];
+        counter++;
+    }
+    counter = 0;
+    for(auto& node : this->outputs){
+        //ComputeNode();
+        outputs[counter] = node->value;
+        counter++;
+    }
 }
 
-void NeuralNet::drawNet(sf::RenderTarget* trgt, Vec2 size, Vec2 center, float nodeRadius){
-    int layerNbr = layers.size();
-    float start_x = center.x - size.x/2.f + nodeRadius;
-    float end_x = center.x + size.x/2.f - nodeRadius;
-    float delta_x = (end_x - start_x) / (float)layerNbr;
-    float crnt_x(start_x);
-    float start_y = center.y - size.y/2.f + nodeRadius;
-    float end_y = center.y + size.y/2.f - nodeRadius;
-    float delta_y;
-    float crnt_y(start_y);
-    sf::CircleShape nodeShape(nodeRadius);
-    nodeShape.setOrigin(nodeRadius, nodeRadius);
-    for(int i = 0; i < layerNbr; i++){
-        delta_y = (end_y - start_y) / layers[i].size();
-        for(int j = 0; j < layers[i].size(); j++){
-            nodeShape.setPosition(crnt_x, crnt_y);
-            crnt_y += delta_y;
-            trgt->draw(nodeShape); 
-        }
-        crnt_x += delta_x;
+void NeuralNet::ComputeNode(NodeLinkedList* current){
+
+    //base case : input and bias nodes values can't be changed
+    if(current->node->type == NodeType::Input || current->node->type != NodeType::Bias){
+        return;
     }
+
+    //Calculate the weighted sum of all connected nodes neurones
+    float sum = 0;
+    while (current->next != NULL)
+    {
+        //Get the next connected node
+        current = current->next;
+
+        //Compute its value
+        ComputeNode(current);
+
+        //Compute its weighted value
+        if(current->connection->enable) { sum += current->node->value * current->connection->weight; }
+    }
+    
+    //Set current node value to ReLU(sum)
+    current->node->value = sum < 0.f ? 0.f : sum;
+}
+
+
+void NeuralNet::Draw(sf::RenderTarget* trgt, Vec2 size, Vec2 center, float nodeRadius){
+    // float start_x = center.x - size.x/2.f + nodeRadius;
+    // float end_x = center.x + size.x/2.f - nodeRadius;
+    // float delta_x = (end_x - start_x) / (float)layerNbr;
+    // float crnt_x(start_x);
+    // float start_y = center.y - size.y/2.f + nodeRadius;
+    // float end_y = center.y + size.y/2.f - nodeRadius;
+    // float delta_y;
+    // float crnt_y(start_y);
+    // sf::CircleShape nodeShape(nodeRadius);
+    // nodeShape.setOrigin(nodeRadius, nodeRadius);
+    // for(int i = 0; i < layerNbr; i++){
+    //     delta_y = (end_y - start_y) / layers[i].size();
+    //     for(int j = 0; j < layers[i].size(); j++){
+    //         nodeShape.setPosition(crnt_x, crnt_y);
+    //         crnt_y += delta_y;
+    //         trgt->draw(nodeShape); 
+    //     }
+    //     crnt_x += delta_x;
+    // }
 }

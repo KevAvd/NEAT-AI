@@ -9,14 +9,6 @@ enum NodeType{
     Input, Output, Hidden, Bias
 };
 
-struct Node{
-    int id;
-    int layer;
-    float inputs;
-    float outputs;
-    NodeType type;
-};
-
 struct Connection{
     int innovationNbr;
     int in;
@@ -25,28 +17,35 @@ struct Connection{
     bool enable;
 };
 
-struct NodeConMap{
+struct Node{
+    int id;
+    float value;
+    NodeType type;
+};
+
+struct NodeLinkedList{
     Node* node;
-    std::vector<Connection*> connections;
+    Connection* connection;
+    NodeLinkedList* next{NULL};
 };
 
 class NeuralNet{
 private:
+    //Nodes and Connections
     std::vector<std::unique_ptr<Node>> nodes;
     std::vector<std::unique_ptr<Connection>> connections;
-    std::vector<std::vector<std::unique_ptr<NodeConMap>>> layers;
+
+    //Store nodes in linkedlist for calculating the neural network's output
+    std::vector<std::unique_ptr<NodeLinkedList>> ll_nodes;
+
+    //Keep tracks of specials nodes
+    std::vector<Node*> inputs;
+    std::vector<Node*> biases;
+    std::vector<Node*> outputs;
 public:
-    //Decode the genome from string to struct Node/Connection stored in vectors
-    //Map each node with his previous layer connections
-    //sort node maps according to their layer position
-    void decodeGenome(std::string genome);
-
-    //Encode the neural net genome into a string
-    std::string encodeGenome();
-
-    //Go through list of node maps and process outputs of each nodes
-    void processInputs(float inputs[]);
-
-    //Draw the neural net //
-    void drawNet(sf::RenderTarget* trgt, Vec2 size, Vec2 center, float nodeRadius);
+    void DecodeGenome(std::string genome);
+    std::string EncodeGenome();
+    void NeuralNet::ProcessInputs(float inputs[], float outputs[]);
+    void NeuralNet::ComputeNode(NodeLinkedList* current);
+    void Draw(sf::RenderTarget* trgt, Vec2 size, Vec2 center, float nodeRadius);
 };
