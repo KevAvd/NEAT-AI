@@ -94,7 +94,6 @@ std::string NeuralNet::EncodeGenome(){
 }
 
 void NeuralNet::ProcessInputs(float inputs[], float outputs[]){
-
     int counter(0);
     for(auto& node : this->inputs){
         node->value = inputs[counter];
@@ -102,7 +101,7 @@ void NeuralNet::ProcessInputs(float inputs[], float outputs[]){
     }
     counter = 0;
     for(auto& node : this->outputs){
-        //ComputeNode();
+        ComputeNode(node->ll_ptr);
         outputs[counter] = node->value;
         counter++;
     }
@@ -123,7 +122,7 @@ void NeuralNet::ComputeNode(NodeLinkedList* current){
         current = current->next;
 
         //Compute its value
-        ComputeNode(current);
+        ComputeNode(current->node->ll_ptr);
 
         //Compute its weighted value
         if(current->connection->enable) { sum += current->node->value * current->connection->weight; }
@@ -135,23 +134,62 @@ void NeuralNet::ComputeNode(NodeLinkedList* current){
 
 
 void NeuralNet::Draw(sf::RenderTarget* trgt, Vec2 size, Vec2 center, float nodeRadius){
-    // float start_x = center.x - size.x/2.f + nodeRadius;
-    // float end_x = center.x + size.x/2.f - nodeRadius;
-    // float delta_x = (end_x - start_x) / (float)layerNbr;
-    // float crnt_x(start_x);
-    // float start_y = center.y - size.y/2.f + nodeRadius;
-    // float end_y = center.y + size.y/2.f - nodeRadius;
-    // float delta_y;
-    // float crnt_y(start_y);
-    // sf::CircleShape nodeShape(nodeRadius);
-    // nodeShape.setOrigin(nodeRadius, nodeRadius);
-    // for(int i = 0; i < layerNbr; i++){
-    //     delta_y = (end_y - start_y) / layers[i].size();
-    //     for(int j = 0; j < layers[i].size(); j++){
-    //         nodeShape.setPosition(crnt_x, crnt_y);
-    //         crnt_y += delta_y;
-    //         trgt->draw(nodeShape); 
-    //     }
-    //     crnt_x += delta_x;
-    // }
+    Vec2 input(
+        center.x - size.x/2.f + nodeRadius,
+        center.y - size.y/2.f + nodeRadius
+    );
+    Vec2 in_delta(
+        0.f,
+        size.y / ((float)inputs.size() + 1.f)
+    );
+    Vec2 output(
+        center.x + size.x/2.f - nodeRadius,
+        center.y - size.y/2.f + nodeRadius
+    );
+    Vec2 out_delta(
+        0.f,
+        size.y / ((float)outputs.size() + 1.f)
+    );
+    Vec2 bias(
+        center.x - size.x/2.f + nodeRadius*3,
+        center.y - size.y/2.f + nodeRadius
+    );
+    Vec2 bias_delta(
+        0.f,
+        size.y / ((float)biases.size() + 1.f)
+    );
+    Vec2 hidden_circle(
+        center.x,
+        center.y + nodeRadius*2
+    );
+    float hidden_radius(size.x/2.f - nodeRadius*2);
+    Angle current_angle(0);
+    current_angle.in_range = true;
+    Angle delta_angle(360.f / (float)hiddens.size());
+
+    for(auto& node : inputs){
+        node->position = input;
+        input += in_delta;
+    }
+
+    for(auto& node : outputs){
+        node->position = output;
+        output += out_delta;
+    }
+
+    for(auto& node : biases){
+        node->position = bias;
+        bias += bias_delta;
+    }
+
+    for(auto& node : hiddens){
+        node->position = hidden_circle + Vec2(&current_angle, hidden_radius);
+        current_angle.SetDegree(current_angle.GetDegree() + delta_angle.GetDegree());
+    }
+
+    for(auto& node : nodes){
+        sf::CircleShape shape(nodeRadius);
+        shape.setPosition(node->position.getVector2f());
+        trgt->draw(shape);
+    }
 }

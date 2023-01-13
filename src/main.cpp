@@ -27,8 +27,8 @@ int main(void){
     Spaceship* myShip = myGame.AddShip(Vec2(400+100,1080/2));
 
     NeuralNet nn;
-    nn.decodeGenome("100-00-0:02-00-00:03-01-01:01-01-03-0000-01:02-02-03-0000-01");
-    window.setFramerateLimit(144);
+    nn.DecodeGenome("100-00-0:02-00-00:03-01-01:01-01-03-0000-01:02-02-03-0000-01");
+    window.setFramerateLimit(60);
     while (window.isOpen())
     {
         //Handle time
@@ -71,6 +71,7 @@ int main(void){
         } else {
             myGame.Draw(&window);
         }
+        nn.Draw(&window, Vec2(800,800),Vec2(1920.f-800,1080.f/2.f),10);
         ImGui::SFML::Render(window);
         window.display();
     }

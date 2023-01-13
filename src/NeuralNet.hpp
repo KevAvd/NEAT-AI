@@ -17,10 +17,14 @@ struct Connection{
     bool enable;
 };
 
+struct NodeLinkedList;
+
 struct Node{
     int id;
     float value;
+    Vec2 position;
     NodeType type;
+    NodeLinkedList* ll_ptr; 
 };
 
 struct NodeLinkedList{
@@ -38,10 +42,11 @@ private:
     //Store nodes in linkedlist for calculating the neural network's output
     std::vector<std::unique_ptr<NodeLinkedList>> ll_nodes;
 
-    //Keep tracks of specials nodes
+    //Keep tracks of nodes 
     std::vector<Node*> inputs;
     std::vector<Node*> biases;
     std::vector<Node*> outputs;
+    std::vector<Node*> hiddens;
 public:
     void DecodeGenome(std::string genome);
     std::string EncodeGenome();
